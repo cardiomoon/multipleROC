@@ -1,0 +1,27 @@
+Package: multipleROC
+Type: Package
+Title: Package for ROC Analysis with Models with Multiple Predictors
+Version: 0.1.0
+Imports:
+   pROC,
+   ggplot2,
+   purrr,
+   moonBook,
+   webr,
+   tidyr,
+   dplyr
+Authors@R: person("Keon-Woong", "Moon", role = c("aut", "cre"),
+                     email = "cardiomoon@gmail.com")
+URL: https://github.com/cardiomoon/multipleROC
+BugReports: https://github.com/cardiomoon/multipleROC/issues
+Description: Draw a ROC plot with ggplot2 for models with multiple predictors. Can draw several ROC curves in a plot.
+   Can perform automatic stepwise logistic regression analysis and compare the initial and final models.
+Depends: R (>= 2.10)
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.0
+VignetteBuilder: knitr
+Suggests: 
+    knitr,
+    rmarkdown

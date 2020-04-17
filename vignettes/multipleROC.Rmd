@@ -1,0 +1,167 @@
+---
+title: "multipleROC"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{multipleROC}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  message=FALSE,
+  warning = FALSE,
+  comment = NA,
+  fig.height=7,
+  fig.width=7,
+  dpi=150
+)
+```
+
+# R package multipleROC
+
+R package *multipleROC* is for ROC analysis with models with multiple predictors. You can draw a ROC plot with ggplot2 for models with multiple predictors. You can draw several ROC curves in a plot. You can perform automatic stepwise logistic regression analysis and compare the initial and final models.
+
+## Installation
+
+You can install multipleROC package from github.
+
+```{r,eval=FALSE}
+install.packages("remotes")
+remotes::install_github("cardiomoon/multipleROC")
+```
+
+## Package loading
+
+```{r}
+library(multipleROC)
+```
+
+## Can I differentiate male patients from female patients with their height?
+
+Data radial from package `moonBook` is a dataset containing demographic data and laboratory data of 115 patients. If you want to differentiate  male and female patients with their heights(in centimeter), you can perform exploratory analysis first.
+
+```{r}
+library(webr)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+theme_set(theme_bw())
+data(radial,package="moonBook")
+radial %>% group_by(sex) %>% numSummaryTable(height)
+```
+You can draw exploratory plots.
+```{r,out.width="45%",fig.show="hold",fig.align='default'}
+ggplot(data=radial)+geom_density(aes(x=height,fill=sex),alpha=0.5) 
+ggplot(data=radial)+geom_boxplot(aes(x=sex,y=height,fill=sex),alpha=0.5) 
+```
+As you can see, male patients are taller than female patients. But how can I determine  the optimal cutoff value?
+
+
+## Make the first ROC plot
+
+To draw a ROC curve is one of the useful method to determine the optimal cutoff value. You can perform ROC analysis using the following R command.The following R command makes an object of class `multipleROC` and makes a plot.  
+
+```{r,out.width="70%",fig.pos="default"}
+data(radial,package="moonBook")
+x=multipleROC(male~height,data=radial)
+```
+
+### Sensitivity, Specificity, PPV and NPV
+
+You can see the ROC plot with sensitivity(Sens), specificity(Spec), positive predictive value(PPV) and negative predictive value(NPV) with the cutoff value 161. These rates comes from the following table.
+
+```{r}
+table(radial$height>=161,radial$male)
+```
+If you use the height $\geq$ 161cm to differentiate male patients from female patients, the true positive(TP) is 50(out of 114), true negative(TN) is 49, false positive(FP) is 7 and the false negative(FN) is 8 patients. You can calculate sensitivity, specificity, positive predictive value and negative predictive values by manual. Sensitivity measures how often a test correctly generates a positive result for people who have the condition that’s being tested for (also known as the “true positive” rate). 
+
+\begin{equation}
+Sensitivity=\frac{TP}{Male\, Patients}=\frac{TP}{FN+TP}=\frac{50}{8+50}=86.2 \%
+\end{equation}
+
+Specificity measures a test’s ability to correctly generate a negative result for people who don’t have the condition that’s being tested for (also known as the “true negative” rate).
+
+\begin{equation}
+Specificity=\frac{TN}{Female\, Patients}=\frac{TN}{TN+FP}=\frac{49}{49+7}=87.5 \%
+\end{equation}
+
+Positive predictive value(PPV) is calculated as follows:
+
+\begin{equation}
+PPV=\frac{TP}{Pts\,with\, height \geq 161cm}=\frac{TP}{TP+FP}=\frac{50}{50+7}=87.7\%
+\end{equation}
+
+Negative predictive value(PPV) is calculated as follows:
+
+\begin{equation}
+NPV=\frac{TN}{Pts\,with\, height < 161cm}=\frac{TN}{TN+FN}=\frac{49}{49+8}= 85.9 \%
+\end{equation}
+
+### The optimal cutoff value
+
+You can calculate the sensitivity, specificity for all the height data of radial. The radial data are from 115 patients, but 1 patient's height is missed. But the length of unique values of radial$height is 39 due to duplication. 
+```{r}
+length(unique(radial$height))
+```
+You can calculate all the ratio by hand. But, there are the results in the `x` object previously we maid. 
+
+```{r}
+x$df
+```
+
+
+You can make exploratory plot of sensitivity and specificity. First, You have to transform the data in long from.
+```{r,out.width="70%",fig.height=5,fig.width=7}
+longdf <- x$df %>% pivot_longer(cols=sens:spec,names_to = "rate")
+ggplot(data=longdf,aes(x=x,y=value,color=rate))+geom_line()
+```
+
+As you can see, the higher the sensitivity, the lower the specificity. The optimal cutoff value is determined where the sum of specificity and sensitivity is the highest.
+
+```{r}
+x$df[which.max(x$df$sum),]
+```
+You can see when the x value is 0.5450, the sum of sensitivity and specificity is the highest. So the best cutoff value of x is 0.5450. This value can convert to optimal value of height by logistic regression model(x$fit) equation.
+
+```{r}
+fit=glm(male~height,data=radial,family=binomial)
+fit
+```
+
+As you knows, you can interpretate the logistic equation as follows.
+
+\begin{equation}
+ log(\frac{p}{1-p})=\beta_0+\beta_1*X
+\end{equation}
+
+This equation is expressed with the following R command.
+
+```
+qlogis(x$cutpoint)=coef(x$fit)[1]+coef(x$fit)[2]*X
+```
+
+So you can calculate the optimal cutpoint of height as follows
+
+```{r}
+height=(qlogis(x$cutpoint)-unname(coef(x$fit)[1]))/unname(coef(x$fit)[2])
+height
+```
+
+
+### Area under curve(AUC)
+
+In the lower right corner, you can see the area under curve(AUC) and the p value from Wilcoxon Rank Sum test. The p value comes from:
+
+```{r}
+wilcox.test(radial$height,radial$male)
+```
+
+The AUC is calcuated by the simpleAUC function
+```{r}
+simpleAUC(x$df)
+x$auc
+```
+
