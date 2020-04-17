@@ -106,31 +106,83 @@ You can calculate the sensitivity, specificity for all the height data of radial
 ```{r}
 length(unique(radial$height))
 ```
-You can calculate all the ratio by hand. But, there are the results in the `x` object previously we maid. 
+You can calculate all the ratio by hand. For your convenience, you can use calSens() function included in multipleROC package. 
+
+```{r,eval=FALSE}
+calSens=function(x,y){
+     newx=sort(unique(x))
+     completeTable=function(res){
+          if(nrow(res)==1){
+               res1=matrix(c(0,0),nrow=1)
+               temp=setdiff(c("TRUE","FALSE"),attr(res,"dimnames")[[1]][1])
+               if(temp=="FALSE") res=rbind(res1,res)
+               else res=rbind(res,res1)
+               res
+          }
+          res
+     }
+
+     getSens=function(cut){
+          res=table(x>=cut,y)
+          res=completeTable(res)
+          sens=res[2,2]/sum(res[,2])
+          spec=res[1,1]/sum(res[,1])
+          ppv=res[2,2]/sum(res[2,])
+          npv=res[1,1]/sum(res[1,])
+          data.frame(x=cut,sens=sens,spec=spec,fpr=1-spec,ppv=ppv,npv=npv,sum=sens+spec)
+     }
+     map_dfr(newx,function(cut){getSens(cut)})
+}
+```
 
 ```{r}
-x$df
+result=calSens(radial$height,radial$male)
+result
 ```
 
 
 You can make exploratory plot of sensitivity and specificity. First, You have to transform the data in long from.
 ```{r,out.width="70%",fig.height=5,fig.width=7}
-longdf <- x$df %>% pivot_longer(cols=sens:spec,names_to = "rate")
+longdf <- result %>% pivot_longer(cols=sens:spec,names_to = "rate")
 ggplot(data=longdf,aes(x=x,y=value,color=rate))+geom_line()
 ```
 
 As you can see, the higher the sensitivity, the lower the specificity. The optimal cutoff value is determined where the sum of specificity and sensitivity is the highest.
 
 ```{r}
-x$df[which.max(x$df$sum),]
+result[which.max(result$sum),]
 ```
-You can see when the x value is 0.5450, the sum of sensitivity and specificity is the highest. So the best cutoff value of x is 0.5450. This value can convert to optimal value of height by logistic regression model(x$fit) equation.
+You can see when the height is 161cm, the sum of sensitivity and specificity is the highest. So the best cutoff value of height is 161cm. With the result, you can draw the ROC plot.
+
+```{r,out.width="70%"}
+result=result[order(result$sens),]
+ggplot(data=result,aes(x=fpr,y=sens))+geom_line()
+```
+
+### The optimal value obtained by generalized linear model
+
+Look at the first ROC plot again. In the ROC plot, you can see the cutoff value of lr.eta is 0.545. Where does this value come from? This value comes from the generalized linear model.
 
 ```{r}
 fit=glm(male~height,data=radial,family=binomial)
-fit
+fit$fitted.values
 ```
 
+You can see the fitted mean values, obtained by transforming the linear predictors by the inverse of the link function. You can use this value to make a ROC plot. Again, you can use calSens() function.
+
+```{r,out.width="70%"}
+result2=calSens(fit$fitted.values,fit$y)
+result2[which.max(result2$sum),]
+```
+
+The optimal fitted value is 0.5451. You can draw ROC curve with this value.
+
+```{r,out.width="70%"}
+result2=result2[order(result2$sens),]
+ggplot(data=result2,aes(x=fpr,y=sens))+geom_line()
+```
+
+What is the relationship of the fitted value of 0.5451 and height 161cm ? 
 As you knows, you can interpretate the logistic equation as follows.
 
 \begin{equation}
@@ -143,7 +195,7 @@ This equation is expressed with the following R command.
 qlogis(x$cutpoint)=coef(x$fit)[1]+coef(x$fit)[2]*X
 ```
 
-So you can calculate the optimal cutpoint of height as follows
+So you can calculate the optimal cutpoint of height with the optimal fitted value 0.5451 as follows.
 
 ```{r}
 height=(qlogis(x$cutpoint)-unname(coef(x$fit)[1]))/unname(coef(x$fit)[2])
@@ -159,9 +211,100 @@ In the lower right corner, you can see the area under curve(AUC) and the p value
 wilcox.test(radial$height,radial$male)
 ```
 
-The AUC is calcuated by the simpleAUC function
+The AUC is calcuated by the simpleAUC function included in multipleROC package.
 ```{r}
+simpleAUC <- function(df){
+     df=df[order(df$x,decreasing=TRUE),]
+     TPR=df$sens
+     FPR=df$fpr
+
+     dFPR <- c(diff(FPR), 0)
+     dTPR <- c(diff(TPR), 0)
+
+     sum(TPR * dFPR) + sum(dTPR * dFPR)/2
+}
+
 simpleAUC(x$df)
-x$auc
 ```
+
+### Convert to pROC::roc object
+
+You can convert a multipleROC object to a roc object. You can use this object to calculate auc or compare the AUC of two ROC curves.
+```{r}
+class(x)
+multipleROC2roc=function(x){
+     pROC::roc(x$fit$y,x$fit$fitted.values,ci=T)
+}
+
+x2 <- multipleROC2roc(x)
+class(x2)
+pROC::auc(x2)
+```
+
+
+## Multiple ROC curves
+
+You can draw multiple ROC curves in the same plot. First, make a list of multipleROC objects and use the plot_ROC function.
+
+```{r,out.width="70%"}
+a=multipleROC(male~height,data=radial,plot=FALSE)
+b=multipleROC(male~age,data=radial,plot=FALSE)
+c=multipleROC(form=male~weight,data=radial,plot=FALSE)
+plot_ROC(list(a,b,c),show.eta=FALSE,show.sens=FALSE)
+```
+
+You can make facetted plot with the following R command.
+
+```{r,out.width="70%"}
+plot_ROC(list(a,b,c),facet=TRUE)
+```
+
+By setting the facet argument TRUE, you can get the facetted plot. Alternatively you can use the facet_grid() function of the package ggplot2.
+
+```{r,out.width="70%"}
+require(ggplot2)
+plot_ROC(list(a,b,c))+facet_grid(no~.)
+```
+
+
+## Models with multiple predictors
+
+You can make ROC plots with multiple predictors. 
+
+```{r,out.width="70%"}
+multipleROC(male~height+weight+age,data=radial)
+```
+
+This plot is made from the following `glm` object.
+
+```{r}
+fit=glm(male~height+weight+age,data=radial,family=binomial)
+```
+
+## Automatic stepwise backward elmination and final model selection
+
+You can use automatic stepwise backward elmination by AIC in multiple glm model.
+
+```{r}
+final=step(fit,trace=0)
+summary(final)
+```
+
+You can compare the initial and final model.
+
+```{r}
+anova(final,fit,test="Chisq")
+```
+
+You can draw plot comparing two ROC curves of the inital and the final model.
+
+```{r,out.width="70%"}
+step_ROC(male~weight+height+age,data=radial)
+```
+
+You can get the anova table.
+```{r}
+step_ROC(male~weight+height+age,data=radial,plot=FALSE)
+```
+
 

@@ -157,7 +157,16 @@ makeLabels=function(x,no=1){
           result=wilcox.test(x$fit$model[,2],y)
           if(result$p.value<0.001) {
                temp=paste(temp,", p < 0.001")
-          } else temp=paste(temp,", p ==",round(result$p.value,3))
+          } else temp=paste(temp,", p =",round(result$p.value,3))
+     } else{
+             ci=suppressMessages(ci(multipleROC2roc(x)))
+             temp=paste(temp,"(",round(ci[1],3),"-",round(ci[3],3),")",sep="")
+             temp
+             result=wilcox.test(x$fit$fitted.values,x$fit$y)
+             if(result$p.value<0.001) {
+                     temp=paste(temp,", p < 0.001")
+             } else temp=paste(temp,", p =",round(result$p.value,3))
+             temp
      }
      labelAUC= paste(legend,"\nOptimal Cutoff value: ",cut,"\n","AUC: ",temp )
      i=which.max(x$df$sum)
@@ -276,7 +285,7 @@ step_ROC=function(formula,data,plot=TRUE,trace=0,...){
      if(plot) {
           plot_ROC(list(x,x2),...)
      } else {
-          result=anova(x$fit,x2$fit,test="Chisq")
+          result=anova(x2$fit,x$fit,test="Chisq")
           result
      }
 
