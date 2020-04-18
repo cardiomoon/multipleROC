@@ -177,6 +177,25 @@ makeLabels=function(x,no=1){
 }
 
 
+
+#' Draw ROC curve with variable names
+#' @param yvar Name of dependent variable
+#' @param xvars Names of independent variables
+#' @param dataname Name of data
+#' @param ... Further arguments to be passed to plot_ROC
+#' @export
+#' @examples
+#' require(moonBook)
+#' plot_ROC2(yvar="male",xvars=c("weight","height","age"),dataname="radial")
+plot_ROC2=function(yvar,xvars,dataname,...){
+        x=lapply(xvars,function(x){
+                formula=paste0(yvar,"~",x)
+                eval(parse(text=paste0("multipleROC(form=",formula,",data=",dataname,",plot=FALSE)")))
+        })
+        plot_ROC(x,...)
+}
+
+
 #'Draw ROC curves
 #'@param x A list of class multipleROC
 #'@param show.points logical
