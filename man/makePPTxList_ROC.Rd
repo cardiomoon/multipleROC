@@ -27,7 +27,7 @@ makePPTxList_ROC(
 
 \item{multiple}{logical Whether or not analyze as multiple predictor model}
 
-\item{separate}{logical Whether or not plot indepedent variables seperately}
+\item{separate}{logical Whether or not plot independent variables separately}
 
 \item{vanilla}{logical Whether or not make vanilla table}
 

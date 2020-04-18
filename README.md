@@ -312,7 +312,7 @@ W = 13110, p-value < 2.2e-16
 alternative hypothesis: true location shift is not equal to 0
 ```
 
-The AUC is calcuated by the simpleAUC function included in multipleROC package.
+The AUC is calculated by the simpleAUC function included in multipleROC package.
 
 ```r
 simpleAUC <- function(df){
@@ -401,7 +401,7 @@ This plot is made from the following `glm` object.
 fit=glm(male~height+weight+age,data=radial,family=binomial)
 ```
 
-## Automatic stepwise backward elmination and final model selection
+## Automatic stepwise backward elimination and final model selection
 
 You can use automatic stepwise backward elmination by AIC in multiple glm model.
 
@@ -448,7 +448,7 @@ Model 2: male ~ height + weight + age
 2       110     63.352  2  0.11025   0.9464
 ```
 
-You can draw plot comparing two ROC curves of the inital and the final model.
+You can draw plot comparing two ROC curves of the initial and the final model.
 
 
 ```r

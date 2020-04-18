@@ -3,7 +3,7 @@
 #'@param xvars Names of independent variables
 #'@param dataname Name of data
 #'@param multiple logical Whether or not analyze as multiple predictor model
-#'@param separate logical Whether or not plot indepedent variables seperately
+#'@param separate logical Whether or not plot independent variables separately
 #'@param vanilla logical Whether or not make vanilla table
 #'@param show.line,show.points,show.eta,show.sens,show.AUC logical Arguments to be passed to plot_ROC()
 #'@export

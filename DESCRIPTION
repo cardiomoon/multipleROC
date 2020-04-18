@@ -7,14 +7,13 @@ Imports:
    ggplot2,
    purrr,
    moonBook,
-   webr,
    tidyr,
    dplyr
 Authors@R: person("Keon-Woong", "Moon", role = c("aut", "cre"),
                      email = "cardiomoon@gmail.com")
 URL: https://github.com/cardiomoon/multipleROC
 BugReports: https://github.com/cardiomoon/multipleROC/issues
-Description: Draw a ROC plot with ggplot2 for models with multiple predictors. Can draw several ROC curves in a plot.
+Description: Draw a ROC curve for models with multiple predictors. Can draw several ROC curves in a plot.
    Can perform automatic stepwise logistic regression analysis and compare the initial and final models.
 Depends: R (>= 2.10)
 License: GPL-3

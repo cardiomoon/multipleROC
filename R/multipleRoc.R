@@ -52,7 +52,7 @@ calSens=function(x,y){
 
 
 
-#' Do a ROC Curve Anlaysis
+#' Do a ROC Curve Analysis
 #'
 #' @aliases plot.multipleROC
 #'
@@ -66,7 +66,7 @@ calSens=function(x,y){
 #' \item{fit}{A class of glm}
 #' \item{df}{a data.frame}
 #' \item{cutpoint}{Numeric. cutpoint}
-#' \item{sens}{label with sensititity, specificity}
+#' \item{sens}{label with sensitivity, specificity}
 #' \item{auc}{numeric. area under curve value}
 #' \item{cutoff}{A data.fame with best cutoff value(s)}
 multipleROC=function(formula,data,plot=TRUE){
@@ -274,7 +274,7 @@ plot_ROC=function(x,show.points=TRUE,show.eta=TRUE,show.sens=TRUE,show.AUC=TRUE,
 #' Perform multiple logistic regression with stepwise
 #' @param formula A formula for logistic regression
 #' @param data A data.frame
-#' @param plot logical If true, retrun a ggplot
+#' @param plot logical If true, return a ggplot
 #' @param trace if positive, information is printed during the running of step. Larger values may give more detailed information.
 #' @param ... Further arguments to be passed to plot_ROC()
 #' @importFrom stats glm terms na.omit step anova

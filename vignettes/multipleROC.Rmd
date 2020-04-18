@@ -38,19 +38,17 @@ library(multipleROC)
 
 ## Can I differentiate male patients from female patients with their height?
 
-Data radial from package `moonBook` is a dataset containing demographic data and laboratory data of 115 patients. If you want to differentiate  male and female patients with their heights(in centimeter), you can perform exploratory analysis first.
+Data radial from package `moonBook` is a dataset containing demographic data and laboratory data of 115 patients. If you want to differentiate  male and female patients with their heights(in centimeter), you may draw exploratory plot first.
 
 ```{r}
-library(webr)
 library(ggplot2)
 library(dplyr)
 library(tidyr)
 
 theme_set(theme_bw())
 data(radial,package="moonBook")
-radial %>% group_by(sex) %>% numSummaryTable(height)
 ```
-You can draw exploratory plots.
+
 ```{r,out.width="45%",fig.show="hold",fig.align='default'}
 ggplot(data=radial)+geom_density(aes(x=height,fill=sex),alpha=0.5) 
 ggplot(data=radial)+geom_boxplot(aes(x=sex,y=height,fill=sex),alpha=0.5) 
@@ -210,7 +208,7 @@ In the lower right corner, you can see the area under curve(AUC) and the p value
 wilcox.test(radial$height,radial$male)
 ```
 
-The AUC is calcuated by the simpleAUC function included in multipleROC package.
+The AUC is calculated by the simpleAUC function included in multipleROC package.
 ```{r}
 simpleAUC <- function(df){
      df=df[order(df$x,decreasing=TRUE),]
@@ -280,7 +278,7 @@ This plot is made from the following `glm` object.
 fit=glm(male~height+weight+age,data=radial,family=binomial)
 ```
 
-## Automatic stepwise backward elmination and final model selection
+## Automatic stepwise backward elimination and final model selection
 
 You can use automatic stepwise backward elmination by AIC in multiple glm model.
 
@@ -295,7 +293,7 @@ You can compare the initial and final model.
 anova(final,fit,test="Chisq")
 ```
 
-You can draw plot comparing two ROC curves of the inital and the final model.
+You can draw plot comparing two ROC curves of the initial and the final model.
 
 ```{r,out.width="70%"}
 step_ROC(male~weight+height+age,data=radial)

@@ -11,7 +11,7 @@ step_ROC(formula, data, plot = TRUE, trace = 0, ...)
 
 \item{data}{A data.frame}
 
-\item{plot}{logical If true, retrun a ggplot}
+\item{plot}{logical If true, return a ggplot}
 
 \item{trace}{if positive, information is printed during the running of step. Larger values may give more detailed information.}
 

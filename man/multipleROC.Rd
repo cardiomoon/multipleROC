@@ -3,7 +3,7 @@
 \name{multipleROC}
 \alias{multipleROC}
 \alias{plot.multipleROC}
-\title{Do a ROC Curve Anlaysis}
+\title{Do a ROC Curve Analysis}
 \usage{
 multipleROC(formula, data, plot = TRUE)
 
@@ -25,12 +25,12 @@ A list of class of multipleROC with elements
 \item{fit}{A class of glm}
 \item{df}{a data.frame}
 \item{cutpoint}{Numeric. cutpoint}
-\item{sens}{label with sensititity, specificity}
+\item{sens}{label with sensitivity, specificity}
 \item{auc}{numeric. area under curve value}
 \item{cutoff}{A data.fame with best cutoff value(s)}
 }
 \description{
-Do a ROC Curve Anlaysis
+Do a ROC Curve Analysis
 }
 \examples{
 multipleROC(am~wt,data=mtcars)
