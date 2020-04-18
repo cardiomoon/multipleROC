@@ -1,5 +1,5 @@
 ---
-title: "multipleROC"
+title: "R package multipleROC"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{multipleROC}
@@ -18,8 +18,6 @@ knitr::opts_chunk$set(
   dpi=150
 )
 ```
-
-# R package multipleROC
 
 R package *multipleROC* is for ROC analysis with models with multiple predictors. You can draw a ROC plot with ggplot2 for models with multiple predictors. You can draw several ROC curves in a plot. You can perform automatic stepwise logistic regression analysis and compare the initial and final models.
 
