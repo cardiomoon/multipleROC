@@ -108,7 +108,7 @@ You can calculate all the ratio by hand. For your convenience, you can use calSe
 
 ```{r,eval=FALSE}
 calSens=function(x,y){
-     newx=sort(unique(x))
+     newx=sort(c(unique(x),max(x,na.rm=TRUE)+1))
      completeTable=function(res){
           if(nrow(res)==1){
                res1=matrix(c(0,0),nrow=1)
@@ -138,6 +138,7 @@ result=calSens(radial$height,radial$male)
 result
 ```
 
+The last x value of data.frame result is a arbitary value to ensure the ROC curve start from c(0,0).
 
 You can make exploratory plot of sensitivity and specificity. First, You have to transform the data in long from.
 ```{r,out.width="70%",fig.height=5,fig.width=7}

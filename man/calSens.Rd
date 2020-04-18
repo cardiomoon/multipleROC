@@ -17,3 +17,7 @@ A data.frame
 \description{
 Calculate sensitivity, specificity
 }
+\examples{
+require(moonBook)
+calSens(radial$height,radial$male)
+}

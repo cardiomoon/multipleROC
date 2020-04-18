@@ -20,10 +20,13 @@ simpleAUC <- function(df){
 #' @param y A numeric vector as a result
 #' @importFrom purrr map_dfr
 #' @export
+#' @examples
+#' require(moonBook)
+#' calSens(radial$height,radial$male)
 #' @return
 #' A data.frame
 calSens=function(x,y){
-     newx=sort(unique(x))
+     newx=sort(c(unique(x),max(x,na.rm=TRUE)+1))
      completeTable=function(res){
           if(nrow(res)==1){
                res1=matrix(c(0,0),nrow=1)
