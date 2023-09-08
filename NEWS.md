@@ -11,4 +11,4 @@ multipleROC2roc,plot_ROC, plot_ROC2, simpleAUC, step_ROC added
 ===========================
 (8-Sep-2023)
 
-* change in description file
+* A shiny app app.R added in inst folder
