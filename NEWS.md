@@ -7,3 +7,8 @@ multipleROC2roc,plot_ROC, plot_ROC2, simpleAUC, step_ROC added
 
 * new vignette `multipleROC` added 
 
+# multipleROC version 0.1.1
+===========================
+(8-Sep-2023)
+
+* change in description file

@@ -1,14 +1,11 @@
 Package: multipleROC
 Type: Package
 Title: Package for ROC Analysis with Models with Multiple Predictors
-Version: 0.1.0
+Version: 0.1.1
 Imports:
    pROC,
    ggplot2,
-   purrr,
-   moonBook,
-   tidyr,
-   dplyr
+   purrr
 Authors@R: person("Keon-Woong", "Moon", role = c("aut", "cre"),
                      email = "cardiomoon@gmail.com")
 URL: https://github.com/cardiomoon/multipleROC
@@ -19,8 +16,11 @@ Depends: R (>= 2.10)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.0
+RoxygenNote: 7.2.3
 VignetteBuilder: knitr
 Suggests: 
+    moonBook,
+    dplyr,
+    tidyr,
     knitr,
     rmarkdown

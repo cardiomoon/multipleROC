@@ -1,0 +1,13 @@
+name: multipleROC
+title: multipleROC
+username:
+account: cardiomoon
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9802026
+bundleId: 7658854
+url: https://cardiomoon.shinyapps.io/multipleROC/
+when: 1694138041.7274
+lastSyncTime: 1694138041.72741
+asMultiple: FALSE
+asStatic: FALSE
